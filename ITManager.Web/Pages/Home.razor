@@ -1,0 +1,57 @@
+@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<div class="page-shell">
+    <header class="page-header fade-in">
+        <div>
+            <p class="page-tag">Clean Architecture · .NET 8</p>
+            <h1>ITManager Template</h1>
+            <p class="page-subtitle">
+                A reusable base solution with Domain, Application, Infrastructure,
+                API and Blazor WASM layers — ready for your domain.
+            </p>
+        </div>
+    </header>
+
+    <div class="feature-grid">
+        <div class="feature-card fade-in" style="--delay:80ms">
+            <div class="feature-icon feature-icon--blue">&#9670;</div>
+            <h3>Domain</h3>
+            <p>Entities, value objects and domain interfaces with no external dependencies.</p>
+        </div>
+        <div class="feature-card fade-in" style="--delay:160ms">
+            <div class="feature-icon feature-icon--indigo">&#9654;</div>
+            <h3>Application</h3>
+            <p>CQRS handlers (Commands &amp; Queries) that orchestrate domain logic.</p>
+        </div>
+        <div class="feature-card fade-in" style="--delay:240ms">
+            <div class="feature-icon feature-icon--teal">&#11044;</div>
+            <h3>Infrastructure</h3>
+            <p>Generic in-memory repository as a reference. Swap for EF Core in production.</p>
+        </div>
+        <div class="feature-card fade-in" style="--delay:320ms">
+            <div class="feature-icon feature-icon--slate">&#9632;</div>
+            <h3>API + Web</h3>
+            <p>ASP.NET Core REST API with Swagger and a Blazor WASM client wired via HttpClient.</p>
+        </div>
+    </div>
+
+    <div class="quick-links fade-in" style="--delay:420ms">
+        <h2>Quick start</h2>
+        <div class="quick-link-row">
+            <a class="quick-link-card" href="/samples">
+                <strong>Browse Samples</strong>
+                <span>View the seeded entities in the in-memory store.</span>
+            </a>
+            <a class="quick-link-card" href="/samples/new">
+                <strong>Create a Sample</strong>
+                <span>Add a new entity via the API command handler.</span>
+            </a>
+            <a class="quick-link-card" href="/counter">
+                <strong>Counter</strong>
+                <span>Classic Blazor WASM interactivity demo.</span>
+            </a>
+        </div>
+    </div>
+</div>

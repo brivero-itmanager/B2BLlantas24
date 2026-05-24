@@ -1,0 +1,131 @@
+@page "/samples"
+@using ITManager.Web.Models
+@using ITManager.Web.Services
+@inject ISampleService SampleService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+@code{
+    private void NavigateToEdit(Guid id)
+    {
+        Navigation.NavigateTo($"/samples/edit/{id}");
+    }
+}
+
+<PageTitle>Samples</PageTitle>
+
+<div class="page-shell">
+    <header class="page-header fade-in">
+        <div>
+            <p class="page-tag">SQL Server</p>
+            <h1>Sample Entities</h1>
+            <p class="page-subtitle">Browse the entities currently loaded in the in-memory repository.</p>
+        </div>
+        <a class="btn-action" href="/samples/new">+ New Sample</a>
+    </header>
+
+    @if (isLoading)
+    {
+        <div class="loading-state fade-in">
+            <div class="spinner"></div>
+            <p>Loading samples&hellip;</p>
+        </div>
+    }
+    else if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert-error fade-in">@errorMessage</div>
+    }
+    else if (!items.Any())
+    {
+        <div class="empty-state fade-in">
+            <p>No samples found. <a href="/samples/new">Create the first one.</a></p>
+        </div>
+    }
+    else
+    {
+        <div class="summary-bar fade-in" style="--delay:100ms">
+            <span class="chip chip--total">Total: <strong>@items.Count</strong></span>
+            <span class="chip chip--active">Active: <strong>@items.Count(i => i.IsActive)</strong></span>
+            <span class="chip chip--inactive">Inactive: <strong>@items.Count(i => !i.IsActive)</strong></span>
+        </div>
+
+        <div class="card fade-in" style="--delay:200ms">
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var (item, index) in items.Select((x, i) => (x, i)))
+                        {
+                            <tr class="fade-in" style="--delay:@((index * 60 + 280))ms">
+                                <td class="cell-name">@item.Name</td>
+                                <td class="cell-desc">@item.Description</td>
+                                <td><span class="category-tag">@item.Category</span></td>
+                                <td>
+                                    <span class="status-badge @(item.IsActive ? "status-badge--active" : "status-badge--inactive")">
+                                        @(item.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                                <td class="cell-date">@item.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")</td>
+                                <td>
+                                    <button type="button" class="btn-action" @onclick="() => NavigateToEdit(item.Id)">Edit</button>
+                                    <button type="button" class="btn-action" @onclick="() => HandleDeleteAsync(item.Id)">Delete</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<SampleItemModel> items = new();
+    private bool isLoading = true;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            items = await SampleService.GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Could not load data from the API: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task HandleDeleteAsync(Guid id)
+    {
+        var confirmed = await JS.InvokeAsync<bool>("confirm", "¿Eliminar este registro?");
+        if (!confirmed)
+        {
+            return;
+        }
+
+        var deleted = await SampleService.DeleteAsync(id);
+        if (deleted)
+        {
+            isLoading = true;
+            errorMessage = null;
+            await OnInitializedAsync();
+            return;
+        }
+
+        errorMessage = "Could not delete entity. Please try again.";
+    }
+}

@@ -1,0 +1,120 @@
+@page "/samples/new"
+@using ITManager.Web.Models
+@using ITManager.Web.Services
+@inject ISampleService SampleService
+@inject NavigationManager Navigation
+
+<PageTitle>New Sample</PageTitle>
+
+<div class="page-shell">
+    <header class="page-header fade-in">
+        <div>
+            <p class="page-tag">Create</p>
+            <h1>New Sample Entity</h1>
+            <p class="page-subtitle">Fill in the details below and persist a new entity in memory.</p>
+        </div>
+        <a class="btn-ghost" href="/samples">&#8592; Back to list</a>
+    </header>
+
+    <div class="card fade-in" style="--delay:120ms">
+        <EditForm EditContext="editContext" OnValidSubmit="HandleSubmitAsync">
+            <DataAnnotationsValidator />
+
+            <div class="form-grid">
+                <div class="form-field">
+                    <label class="form-label">Name <span class="required">*</span></label>
+                    <InputText class="form-control" @bind-Value="model.Name" placeholder="e.g. Alpha Project" />
+                    <ValidationMessage For="@(() => model.Name)" class="field-error" />
+                </div>
+
+                <div class="form-field">
+                    <label class="form-label">Category <span class="required">*</span></label>
+                    <InputSelect class="form-control" @bind-Value="model.Category">
+                        <option value="">— Select a category —</option>
+                        @foreach (var cat in Categories)
+                        {
+                            <option value="@cat">@cat</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => model.Category)" class="field-error" />
+                </div>
+
+                <div class="form-field form-field--full">
+                    <label class="form-label">Description</label>
+                    <InputTextArea class="form-control" rows="3" @bind-Value="model.Description"
+                                   placeholder="Brief description of this entity…" />
+                    <ValidationMessage For="@(() => model.Description)" class="field-error" />
+                </div>
+
+                <div class="form-field form-field--full">
+                    <label class="form-label form-label--checkbox">
+                        <InputCheckbox @bind-Value="model.IsActive" />
+                        <span>Mark as Active</span>
+                    </label>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                <div class="alert-error mt-1">@errorMessage</div>
+            }
+            @if (!string.IsNullOrWhiteSpace(successMessage))
+            {
+                <div class="alert-success mt-1">@successMessage</div>
+            }
+
+            <div class="form-actions">
+                <button class="btn-action" type="submit" disabled="@isSubmitting">
+                    @(isSubmitting ? "Saving…" : "Save Entity")
+                </button>
+                <button type="button" class="btn-ghost" @onclick="@(() => Navigation.NavigateTo("/samples"))">
+                    Cancel
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private static readonly string[] Categories = ["Engineering", "Marketing", "Finance", "Operations", "Design", "Other"];
+
+    private readonly CreateSampleModel model = new();
+    private EditContext editContext = default!;
+    private bool isSubmitting;
+    private string? errorMessage;
+    private string? successMessage;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(model);
+    }
+
+    private async Task HandleSubmitAsync()
+    {
+        errorMessage = null;
+        successMessage = null;
+        isSubmitting = true;
+
+        try
+        {
+            var createdId = await SampleService.CreateAsync(model);
+            if (createdId is null || createdId == Guid.Empty)
+            {
+                errorMessage = "Could not create entity. Please try again.";
+                return;
+            }
+
+            successMessage = "Entity created successfully. Redirecting…";
+            await Task.Delay(800);
+            Navigation.NavigateTo("/samples", forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Unexpected error: {ex.Message}";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+}
