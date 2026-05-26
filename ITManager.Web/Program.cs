@@ -14,5 +14,6 @@ var baseAddress = string.IsNullOrWhiteSpace(apiBaseUrl)
 
 builder.Services.AddScoped(_ => new HttpClient { BaseAddress = baseAddress });
 builder.Services.AddScoped<ISampleService, SampleService>();
+builder.Services.AddScoped<ITareaService, TareaService>();
 
 await builder.Build().RunAsync();
