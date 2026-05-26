@@ -24,7 +24,7 @@ namespace ITManager.Api.Controllers
         [HttpPut("{id:long}")]
         public async Task<IActionResult> Update(long id, [FromBody] ActualizarTareaCommand command)
         {
-            command.Id = id;
+            var commandWithId = command with { Id = id };
 
             try
             {
@@ -65,7 +65,7 @@ namespace ITManager.Api.Controllers
         {
             try
             {
-                var result = await getTareaByIdQueryHandler.HandleAsync(new GetTareaByIdQuery { Id = id });
+                var result = await getTareaByIdQueryHandler.HandleAsync(new GetTareaByIdQuery (id));
                 return Ok(result);
             }
             catch (KeyNotFoundException ex)
