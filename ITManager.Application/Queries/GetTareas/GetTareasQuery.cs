@@ -1,12 +1,10 @@
 namespace ITManager.Application.Queries.GetTareas
 {
-    public record GetTareasQuery
-    {
-        public string? Status { get; init; }
-        public string? Uen { get; init; }
-        public DateTime? Desde { get; init; }
-        public DateTime? Hasta { get; init; }
-        public int Page { get; init; } = 1;
-        public int PageSize { get; init; } = 200;
-    }
+    public record GetTareasQuery(
+        string? Status = null,
+        string? Uen = null,
+        DateTime? Desde = null,
+        DateTime? Hasta = null,
+        int Page = 1,
+        int PageSize = 200);
 }
