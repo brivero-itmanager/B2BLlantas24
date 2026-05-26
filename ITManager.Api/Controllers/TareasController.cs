@@ -2,6 +2,7 @@ using ITManager.Application.Commands.ActualizarTarea;
 using ITManager.Application.Commands.CrearTarea;
 using ITManager.Application.Queries.GetTareaById;
 using ITManager.Application.Queries.GetTareas;
+using ITManager.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ITManager.Api.Controllers
@@ -22,13 +23,12 @@ namespace ITManager.Api.Controllers
         }
 
         [HttpPut("{id:long}")]
-        public async Task<IActionResult> Update(long id, [FromBody] ActualizarTareaCommand command)
+        public async Task<IActionResult> Update(long id, [FromBody] ActualizarTareaRequest request)
         {
-            var commandWithId = command with { Id = id };
-
             try
             {
-                await actualizarTareaCommandHandler.HandleAsync(command);
+                await actualizarTareaCommandHandler.HandleAsync(
+                    new ActualizarTareaCommand(id, request.Status, request.LastError));
             }
             catch (KeyNotFoundException ex)
             {
@@ -47,15 +47,8 @@ namespace ITManager.Api.Controllers
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 200)
         {
-            var result = await getTareasQueryHandler.HandleAsync(new GetTareasQuery
-            {
-                Status = status,
-                Uen = uen,
-                Desde = desde,
-                Hasta = hasta,
-                Page = page,
-                PageSize = pageSize
-            });
+            var result = await getTareasQueryHandler.HandleAsync(
+                new GetTareasQuery(status, uen, desde, hasta, page, pageSize));
 
             return Ok(result);
         }
