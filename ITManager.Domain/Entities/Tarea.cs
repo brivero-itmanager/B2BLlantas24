@@ -25,5 +25,23 @@ namespace ITManager.Domain.Entities
         public int Attempts { get; private set; }
         public string? LastError { get; private set; }
         public DateTime? ProcessedAt { get; private set; }
+
+        public void MarcarComoEnviada()
+        {
+            Status = "sent";
+            ProcessedAt = DateTime.UtcNow;
+        }
+
+        public void MarcarComoFallida(string error)
+        {
+            Status = "failed";
+            LastError = error;
+            ProcessedAt = DateTime.UtcNow;
+        }
+
+        public void IncrementarIntento()
+        {
+            Attempts++;
+        }
     }
 }
