@@ -1,3 +1,7 @@
+using ITManager.Application.Commands.ActualizarTarea;
+using ITManager.Application.Commands.CrearTarea;
+using ITManager.Application.Queries.GetTareaById;
+using ITManager.Application.Queries.GetTareas;
 using ITManager.Application.Commands.CreateSample;
 using ITManager.Application.Commands.DeleteSample;
 using ITManager.Application.Commands.UpdateSample;
@@ -6,6 +10,7 @@ using ITManager.Application.Queries.GetSamples;
 using ITManager.Domain.Entities;
 using ITManager.Domain.Interfaces;
 using ITManager.Infrastructure.Persistance;
+using ITManager.Infrastructure.Persistance.Repositories;
 using ITManager.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,9 +24,14 @@ builder.Services.AddDbContext<ITManagerDbContext>(options =>
 
 // Register repositories
 builder.Services.AddScoped<IRepository<SampleEntity>, SampleRepository>();
+builder.Services.AddScoped<ITareaRepository, TareaRepository>();
 
 // Register command and query handlers
 builder.Services.AddScoped<CreateSampleCommandHandler>();
+builder.Services.AddScoped<CrearTareaCommandHandler>();
+builder.Services.AddScoped<ActualizarTareaCommandHandler>();
+builder.Services.AddScoped<GetTareasQueryHandler>();
+builder.Services.AddScoped<GetTareaByIdQueryHandler>();
 builder.Services.AddScoped<GetSamplesQueryHandler>();
 builder.Services.AddScoped<GetSampleByIdQueryHandler>();
 builder.Services.AddScoped<UpdateSampleCommandHandler>();

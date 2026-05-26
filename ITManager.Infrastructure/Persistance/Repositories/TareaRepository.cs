@@ -11,10 +11,40 @@ namespace ITManager.Infrastructure.Persistance.Repositories
             return await dbContext.Tareas.FirstOrDefaultAsync(t => t.Id == id);
         }
 
-        public async Task<List<Tarea>> GetAllAsync()
+        public async Task<List<Tarea>> GetAllAsync(
+            string? status,
+            string? uen,
+            DateTime? desde,
+            DateTime? hasta,
+            int page,
+            int pageSize)
         {
-            return await dbContext.Tareas
+            var query = dbContext.Tareas.AsQueryable();
+
+            if (status is not null)
+            {
+                query = query.Where(t => t.Status == status);
+            }
+
+            if (uen is not null)
+            {
+                query = query.Where(t => t.Uen == uen);
+            }
+
+            if (desde is not null)
+            {
+                query = query.Where(t => t.CreatedAt >= desde.Value);
+            }
+
+            if (hasta is not null)
+            {
+                query = query.Where(t => t.CreatedAt <= hasta.Value);
+            }
+
+            return await query
                 .OrderByDescending(t => t.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
         }
 

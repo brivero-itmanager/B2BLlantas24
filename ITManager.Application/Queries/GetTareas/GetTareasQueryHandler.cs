@@ -6,7 +6,13 @@ namespace ITManager.Application.Queries.GetTareas
     {
         public async Task<List<TareaDto>> HandleAsync(GetTareasQuery query)
         {
-            var tareas = await repository.GetAllAsync();
+            var tareas = await repository.GetAllAsync(
+                query.Status,
+                query.Uen,
+                query.Desde,
+                query.Hasta,
+                query.Page,
+                query.PageSize);
 
             return tareas.Select(tarea => new TareaDto
             {
