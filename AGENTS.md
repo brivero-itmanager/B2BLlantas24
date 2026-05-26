@@ -168,3 +168,39 @@ dotnet restore ITManager.slnx
 dotnet build ITManager.slnx
 dotnet test ITManager.slnx
 ```
+
+## 9) Formato de prompts para tareas
+
+Todo prompt enviado a un agente (Codex u otro) debe seguir esta estructura fija.
+No omitir secciones aunque parezcan vacías — escribir "N/A" si no aplica.
+
+---
+
+**PROMPT XX — [Nombre corto de la tarea]**
+
+### Contexto
+Estado actual del proyecto relevante para esta tarea: qué archivos existen,
+qué problema hay, cuál es el punto de partida. Ser específico con rutas y nombres.
+
+### Objetivo de la tarea
+Una sola oración que delimite el alcance. Qué se quiere lograr y nada más.
+
+### Cambios requeridos
+Numerado por archivo. Para cada uno:
+- Ruta exacta del archivo (crear o modificar)
+- Qué hacer
+- Snippet de código solo cuando haya ambigüedad en firma o comportamiento esperado
+
+### Restricciones
+Lista de lo que NO se debe tocar: capas, archivos, paquetes, patrones.
+Incluir siempre:
+- Qué proyectos están fuera de scope
+- Que no se ejecuten comandos de terminal
+- Que no se agreguen paquetes NuGet salvo indicación explícita
+
+### Retro esperada al terminar
+Al finalizar, el agente debe responder con:
+1. ¿Qué se hizo? — archivos creados y modificados con descripción de cada cambio
+2. ¿Qué decisiones se tomaron? — ambigüedades encontradas y cómo se resolvieron
+3. ¿Qué quedó pendiente o con duda? — lo que no se pudo resolver o requiere confirmación
+4. ¿Se encontró algo que contradice la arquitectura? — conflictos con las reglas del AGENTS.md
