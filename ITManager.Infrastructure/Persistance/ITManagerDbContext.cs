@@ -10,11 +10,13 @@ namespace ITManager.Infrastructure.Persistance
         }
 
         public DbSet<SampleEntity> Samples => Set<SampleEntity>();
+        public DbSet<Tarea> Tareas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ITManagerDbContext).Assembly);
+            modelBuilder.ApplyConfiguration(new Configurations.TareaConfiguration());
         }
     }
 }
