@@ -2,6 +2,8 @@ namespace ITManager.Domain.Entities
 {
     public class Tarea
     {
+        private readonly List<TareaLog> _logs = new();
+
         private Tarea()
         {
         }
@@ -30,47 +32,60 @@ namespace ITManager.Domain.Entities
         public string? WooCommerceResponse { get; private set; }
         public string TaskType { get; private set; }
         public string? DeduplicationKey { get; private set; }
+        public IReadOnlyList<TareaLog> Logs => _logs.AsReadOnly();
 
         public void MarcarComoEnviada()
         {
             Status = "sent";
-            ProcessedAt = DateTime.Now;
-            UpdatedAt = DateTime.Now;
+            ProcessedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
+            AgregarLog("ENVIADA", null);
         }
 
         public void MarcarComoFallida(string error)
         {
             Status = "failed";
             LastError = error;
-            ProcessedAt = DateTime.Now;
-            UpdatedAt = DateTime.Now;
+            ProcessedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
+            AgregarLog("FALLIDA", error);
         }
 
         public void IncrementarIntento()
         {
             Attempts++;
+            AgregarLog("INTENTO", $"Intento #{Attempts}");
         }
 
         public void MarcarComoEnProceso()
         {
             Status = "in_progress";
-            UpdatedAt = DateTime.Now;
+            UpdatedAt = DateTime.UtcNow;
+            AgregarLog("EN_PROCESO", null);
         }
 
         public void MarcarComoSuperseded()
         {
             Status = "superseded";
-            UpdatedAt = DateTime.Now;
+            UpdatedAt = DateTime.UtcNow;
+            AgregarLog("SUPERSEDED", null);
         }
 
         public void RegistrarRespuestaWooCommerce(string response)
         {
             WooCommerceResponse = response;
+            AgregarLog("RESPUESTA_WOOCOMMERCE", response);
         }
 
         public void AsignarDeduplicationKey(string key)
         {
             DeduplicationKey = key;
+            AgregarLog("DEDUPLICATION_KEY_ASIGNADA", key);
+        }
+
+        private void AgregarLog(string evento, string? detalle)
+        {
+            _logs.Add(new TareaLog(Id, evento, detalle));
         }
 
         private static string ValidarTaskType(string taskType)
