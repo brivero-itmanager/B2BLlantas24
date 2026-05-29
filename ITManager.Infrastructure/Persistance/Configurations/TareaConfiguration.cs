@@ -17,6 +17,9 @@ namespace ITManager.Infrastructure.Persistance.Configurations
             builder.Property(x => x.CreatedAt)
                 .HasDefaultValueSql("GETUTCDATE()");
 
+            builder.Property(x => x.UpdatedAt)
+                .IsRequired(false);
+
             builder.Property(x => x.Uen)
                 .IsRequired()
                 .HasMaxLength(10);
@@ -44,6 +47,21 @@ namespace ITManager.Infrastructure.Persistance.Configurations
 
             builder.Property(x => x.ProcessedAt)
                 .IsRequired(false);
+
+            builder.Property(x => x.WooCommerceResponse)
+                .IsRequired(false)
+                .HasColumnType("nvarchar(max)")
+                .HasColumnName("woocommerce_response");
+
+            builder.Property(x => x.TaskType)
+                .IsRequired()
+                .HasMaxLength(20)
+                .HasColumnName("task_type");
+
+            builder.Property(x => x.DeduplicationKey)
+                .IsRequired(false)
+                .HasMaxLength(100)
+                .HasColumnName("deduplication_key");
         }
     }
 }
