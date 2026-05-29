@@ -37,8 +37,8 @@ namespace ITManager.Domain.Entities
         public void MarcarComoEnviada()
         {
             Status = "sent";
-            ProcessedAt = DateTime.UtcNow;
-            UpdatedAt = DateTime.UtcNow;
+            ProcessedAt = DateTime.Now;
+            UpdatedAt = DateTime.Now;
             AgregarLog("ENVIADA", null);
         }
 
@@ -46,8 +46,8 @@ namespace ITManager.Domain.Entities
         {
             Status = "failed";
             LastError = error;
-            ProcessedAt = DateTime.UtcNow;
-            UpdatedAt = DateTime.UtcNow;
+            ProcessedAt = DateTime.Now;
+            UpdatedAt = DateTime.Now;
             AgregarLog("FALLIDA", error);
         }
 
@@ -60,14 +60,14 @@ namespace ITManager.Domain.Entities
         public void MarcarComoEnProceso()
         {
             Status = "in_progress";
-            UpdatedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.Now;
             AgregarLog("EN_PROCESO", null);
         }
 
         public void MarcarComoSuperseded()
         {
             Status = "superseded";
-            UpdatedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.Now;
             AgregarLog("SUPERSEDED", null);
         }
 

@@ -15,7 +15,7 @@ public sealed class TareaPollingWorker : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            _logger.LogInformation("TareaPollingWorker — ciclo de polling {Time}", DateTimeOffset.UtcNow);
+            _logger.LogInformation("TareaPollingWorker — ciclo de polling {Time}", DateTimeOffset.Now);
             await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
         }
     }

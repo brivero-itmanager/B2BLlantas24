@@ -11,7 +11,7 @@ namespace ITManager.Domain.Entities
             TareaId = tareaId;
             Evento = evento;
             Detalle = detalle;
-            OcurridoEn = DateTime.UtcNow;
+            OcurridoEn = DateTime.Now;
         }
 
         public long Id { get; private set; }
