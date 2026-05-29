@@ -16,7 +16,7 @@ namespace ITManager.Domain.Entities
             Description = description;
             Category = category;
             IsActive = isActive;
-            CreatedAt = DateTime.UtcNow;
+            CreatedAt = DateTime.Now;
         }
 
         public void Update(string name, string description, string category, bool isActive)

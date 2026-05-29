@@ -14,7 +14,7 @@ namespace ITManager.Domain.Entities
             NombreTarea = nombreTarea;
             Json = json;
             TaskType = ValidarTaskType(taskType);
-            CreatedAt = DateTime.UtcNow;
+            CreatedAt = DateTime.Now;
             Status = "pending";
             Attempts = 0;
         }

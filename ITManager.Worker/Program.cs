@@ -1,7 +1,9 @@
 using ITManager.Infrastructure.Persistance;
 using ITManager.Worker.Workers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Serilog;
+
 
 var host = Host.CreateDefaultBuilder(args)
     .UseSerilog((context, config) =>
