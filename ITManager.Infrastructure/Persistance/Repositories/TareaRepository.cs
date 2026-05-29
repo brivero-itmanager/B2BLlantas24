@@ -59,5 +59,20 @@ namespace ITManager.Infrastructure.Persistance.Repositories
             dbContext.Tareas.Update(tarea);
             await dbContext.SaveChangesAsync();
         }
+
+        public async Task<List<Tarea>> GetPendingBatchAsync(int batchSize)
+        {
+            return await dbContext.Tareas
+                .Where(t => t.Status == "pending")
+                .OrderBy(t => t.CreatedAt)
+                .Take(batchSize)
+                .ToListAsync();
+        }
+
+        public async Task UpdateRangeAsync(IEnumerable<Tarea> tareas)
+        {
+            dbContext.Tareas.UpdateRange(tareas);
+            await dbContext.SaveChangesAsync();
+        }
     }
 }

@@ -1,4 +1,6 @@
+using ITManager.Domain.Interfaces;
 using ITManager.Infrastructure.Persistance;
+using ITManager.Infrastructure.Persistance.Repositories;
 using ITManager.Worker.Workers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
@@ -18,6 +20,8 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddDbContext<ITManagerDbContext>(options =>
             options.UseSqlServer(
                 context.Configuration.GetConnectionString("DefaultConnection")));
+
+        services.AddScoped<ITareaRepository, TareaRepository>();
 
         services.AddHostedService<TareaPollingWorker>();
     })
