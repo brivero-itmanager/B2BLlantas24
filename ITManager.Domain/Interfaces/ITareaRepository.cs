@@ -14,5 +14,7 @@ namespace ITManager.Domain.Interfaces
             int pageSize);
         Task AddAsync(Tarea tarea);
         Task UpdateAsync(Tarea tarea);
+        Task<List<Tarea>> GetPendingBatchAsync(int batchSize);
+        Task UpdateRangeAsync(IEnumerable<Tarea> tareas);
     }
 }
