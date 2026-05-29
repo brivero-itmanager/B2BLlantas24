@@ -4,4 +4,5 @@
   <Project Path="ITManager.Domain/ITManager.Domain.csproj" />
   <Project Path="ITManager.Infrastructure/ITManager.Infrastructure.csproj" />
   <Project Path="ITManager.Web/ITManager.Web.csproj" />
+  <Project Path="ITManager.Worker/ITManager.Worker.csproj" />
 </Solution>
