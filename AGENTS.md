@@ -147,6 +147,7 @@ No:
    - no ocultar excepciones,
    - traducir a respuestas HTTP claras en API.
 8. **Mapeos explícitos**: Entity ↔ DTO en Application (o mapping profile dedicado si crece).
+9. Fechas: usar DateTime.Now en todo el sistema — la aplicación opera exclusivamente en zona horaria CDMX (UTC-6). No usar DateTime.UtcNow.
 
 ## 6) Reglas de evolución (cuando el proyecto crezca)
 

@@ -12,7 +12,7 @@ namespace ITManager.Domain.Entities
             NombreTarea = nombreTarea;
             Json = json;
             TaskType = ValidarTaskType(taskType);
-            CreatedAt = DateTime.UtcNow;
+            CreatedAt = DateTime.Now;
             Status = "pending";
             Attempts = 0;
         }
@@ -34,16 +34,16 @@ namespace ITManager.Domain.Entities
         public void MarcarComoEnviada()
         {
             Status = "sent";
-            ProcessedAt = DateTime.UtcNow;
-            UpdatedAt = DateTime.UtcNow;
+            ProcessedAt = DateTime.Now;
+            UpdatedAt = DateTime.Now;
         }
 
         public void MarcarComoFallida(string error)
         {
             Status = "failed";
             LastError = error;
-            ProcessedAt = DateTime.UtcNow;
-            UpdatedAt = DateTime.UtcNow;
+            ProcessedAt = DateTime.Now;
+            UpdatedAt = DateTime.Now;
         }
 
         public void IncrementarIntento()
@@ -54,13 +54,13 @@ namespace ITManager.Domain.Entities
         public void MarcarComoEnProceso()
         {
             Status = "in_progress";
-            UpdatedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.Now;
         }
 
         public void MarcarComoSuperseded()
         {
             Status = "superseded";
-            UpdatedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.Now;
         }
 
         public void RegistrarRespuestaWooCommerce(string response)
