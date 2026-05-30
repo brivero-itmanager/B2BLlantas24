@@ -69,6 +69,14 @@ namespace ITManager.Infrastructure.Persistance.Repositories
                 .ToListAsync();
         }
 
+        public async Task<bool> ExisteVersionMasRecienteAsync(long tareaId, string deduplicationKey)
+        {
+            return await dbContext.Tareas.AnyAsync(t =>
+                t.DeduplicationKey == deduplicationKey &&
+                t.Id > tareaId &&
+                (t.Status == "in_progress" || t.Status == "pending"));
+        }
+
         public async Task UpdateRangeAsync(IEnumerable<Tarea> tareas)
         {
             dbContext.Tareas.UpdateRange(tareas);
