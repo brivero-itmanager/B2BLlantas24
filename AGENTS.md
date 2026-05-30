@@ -288,6 +288,25 @@ Antes de publicar en Service Bus, el PollingWorker agrupa tareas `pending` por `
 
 `superseded` no es un fallo — es comportamiento esperado y visible en el tablero para auditoría.
 
+### Deduplicación en dos puntos
+
+La deduplicación opera en dos momentos distintos:
+
+**Punto 1 — PollingWorker (antes de publicar a Service Bus)**
+Agrupa tareas `pending` por `DeduplicationKey` en el batch actual.
+Conserva la más reciente, marca las demás como `superseded`.
+Resuelve acumulación durante caída del Worker.
+
+**Punto 2 — ConsumerWorker (antes de llamar WooCommerce)**
+Antes de procesar un mensaje, verifica si existe una tarea más reciente
+del mismo `DeduplicationKey` con status `in_progress` o `pending`.
+Si existe → marca la tarea actual como `superseded`, descarta el mensaje.
+Si no existe → llama WooCommerce.
+Resuelve acumulación en Service Bus durante caída de WooCommerce.
+
+Método requerido en `ITareaRepository`:
+`Task<bool> ExisteVersionMasRecienteAsync(long tareaId, string deduplicationKey)`
+
 ### 10.6 Azure Service Bus — Configuración
 
 - **Colas:**
@@ -383,3 +402,4 @@ Contenido:
 - **Polly** — resiliencia, reintentos y Circuit Breaker.
 - **Azure.Messaging.ServiceBus** — cliente de Azure Service Bus.
 - **Serilog** + **Serilog.Sinks.Console** + **Serilog.Sinks.File** — logging estructurado.
+

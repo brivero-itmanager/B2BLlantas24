@@ -15,7 +15,7 @@ namespace ITManager.Infrastructure.Persistance.Configurations
                 .ValueGeneratedOnAdd();
 
             builder.Property(x => x.CreatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("GETDATE()");
 
             builder.Property(x => x.UpdatedAt)
                 .IsRequired(false);
@@ -62,6 +62,8 @@ namespace ITManager.Infrastructure.Persistance.Configurations
                 .IsRequired(false)
                 .HasMaxLength(100)
                 .HasColumnName("deduplication_key");
+
+            builder.Ignore(x => x.Logs);
         }
     }
 }
