@@ -29,6 +29,14 @@ var host = Host.CreateDefaultBuilder(args)
             options.UseSqlServer(
                 context.Configuration.GetConnectionString("DefaultConnection")));
 
+        services.AddSingleton(sp =>
+        {
+            var config = sp.GetRequiredService<IConfiguration>();
+            var connectionString = config["ServiceBus:ConnectionString"]
+                ?? throw new InvalidOperationException("ServiceBus:ConnectionString no está configurado.");
+            return new ServiceBusClient(connectionString);
+        });
+
         services.AddScoped<ITareaRepository, TareaRepository>();
 
         services.AddHostedService<TareaPollingWorker>();

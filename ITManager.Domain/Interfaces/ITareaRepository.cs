@@ -15,6 +15,7 @@ namespace ITManager.Domain.Interfaces
         Task AddAsync(Tarea tarea);
         Task UpdateAsync(Tarea tarea);
         Task<List<Tarea>> GetPendingBatchAsync(int batchSize);
+        Task<bool> ExisteVersionMasRecienteAsync(long tareaId, string deduplicationKey);
         Task UpdateRangeAsync(IEnumerable<Tarea> tareas);
     }
 }

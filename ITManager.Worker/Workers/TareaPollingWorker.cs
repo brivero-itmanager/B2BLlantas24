@@ -1,3 +1,4 @@
+using Azure.Messaging.ServiceBus;
 using ITManager.Domain.Entities;
 using ITManager.Domain.Interfaces;
 
@@ -7,18 +8,24 @@ public sealed class TareaPollingWorker : BackgroundService
 {
     private readonly ILogger<TareaPollingWorker> _logger;
     private readonly IServiceScopeFactory _scopeFactory;
+    private readonly ServiceBusSender _sender;
     private readonly int _pollingIntervalSeconds;
     private readonly int _batchSize;
 
     public TareaPollingWorker(
         ILogger<TareaPollingWorker> logger,
         IServiceScopeFactory scopeFactory,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        ServiceBusClient serviceBusClient)
     {
         _logger = logger;
         _scopeFactory = scopeFactory;
         _pollingIntervalSeconds = configuration.GetValue("Worker:PollingIntervalSeconds", 10);
         _batchSize = configuration.GetValue("Worker:BatchSize", 50);
+
+        var queueName = configuration["ServiceBus:ToWooCommerceQueue"]
+            ?? throw new InvalidOperationException("ServiceBus:ToWooCommerceQueue no está configurado.");
+        _sender = serviceBusClient.CreateSender(queueName);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -44,6 +51,8 @@ public sealed class TareaPollingWorker : BackgroundService
                 {
                     ProcesarBatch(tareas, out var candidatas, out var superseded);
 
+                    await PublicarCandidatasAsync(candidatas, stoppingToken);
+
                     var todasAfectadas = superseded.Concat(candidatas);
                     await repository.UpdateRangeAsync(todasAfectadas);
                     _logger.LogInformation(
@@ -62,6 +71,62 @@ public sealed class TareaPollingWorker : BackgroundService
             }
 
             await Task.Delay(TimeSpan.FromSeconds(_pollingIntervalSeconds), stoppingToken);
+        }
+    }
+
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        await _sender.DisposeAsync();
+        await base.StopAsync(cancellationToken);
+    }
+
+    private async Task PublicarCandidatasAsync(List<Tarea> candidatas, CancellationToken cancellationToken)
+    {
+        foreach (var tarea in candidatas)
+        {
+            var sessionId = !string.IsNullOrEmpty(tarea.DeduplicationKey)
+                ? tarea.DeduplicationKey
+                : tarea.Id.ToString();
+
+            var mensaje = new ServiceBusMessage(tarea.Json)
+            {
+                MessageId = !string.IsNullOrEmpty(tarea.DeduplicationKey)
+                    ? tarea.DeduplicationKey
+                    : tarea.Id.ToString(),
+                SessionId = sessionId,
+                ContentType = "application/json",
+                Subject = tarea.NombreTarea,
+                ApplicationProperties =
+                {
+                    ["TareaId"] = tarea.Id,
+                    ["Uen"] = tarea.Uen,
+                    ["NombreTarea"] = tarea.NombreTarea,
+                    ["DeduplicationKey"] = tarea.DeduplicationKey ?? string.Empty
+                }
+            };
+
+            try
+            {
+                await _sender.SendMessageAsync(mensaje, cancellationToken);
+                _logger.LogInformation(
+                    "Tarea {Id} publicada en Service Bus — {NombreTarea} | Session: {SessionId}",
+                    tarea.Id,
+                    tarea.NombreTarea,
+                    sessionId);
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Error al publicar tarea {Id} en Service Bus — {NombreTarea} | Session: {SessionId}",
+                    tarea.Id,
+                    tarea.NombreTarea,
+                    sessionId);
+            }
         }
     }
 
